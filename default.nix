@@ -35,6 +35,9 @@ let
         boot.imageType = imageType;
       }
     ];
+    specialArgs = {
+      modulesPath = builtins.toString ./modules;
+    };
   };
   config = eval.config;
 
