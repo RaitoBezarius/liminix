@@ -5,9 +5,15 @@
 , ...
 }:
 let
-  inherit (lib) mkOption types concatStringsSep;
+  inherit (lib) mkOption types concatStringsSep filter;
   inherit (pkgs) liminix callPackage writeText;
   o = config.system.outputs;
+  # Handle assertions and warnings
+
+  failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+  baseSystemConfiguration = if failedAssertions != []
+    then throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: "- ${x}") failedAssertions)}"
+    else lib.showWarnings config.warnings o.systemConfiguration;
 in
 {
   imports = [
@@ -121,10 +127,10 @@ in
           inherit (pkgs.pkgsBuildBuild) runCommand;
         in runCommand "mktree" { } ''
           mkdir -p $out/nix/store/ $out/secrets $out/boot
-          cp ${o.systemConfiguration}/bin/activate $out/activate
+          cp ${baseSystemConfiguration}/bin/activate $out/activate
           ln -s ${pkgs.s6-init-bin}/bin/init $out/init
           mkdir -p $out/nix/store
-          for path in $(cat ${o.systemConfiguration}/etc/nix-store-paths) ; do
+          for path in $(cat ${baseSystemConfiguration}/etc/nix-store-paths) ; do
             (cd $out && cp -a $path .$path)
           done
         '';

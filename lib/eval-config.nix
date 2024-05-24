@@ -18,6 +18,7 @@ in
     "${modulesPath}/users.nix"
     "${modulesPath}/outputs.nix"
     "${modulesPath}/nixpkgs.nix"
+    "${modulesPath}/misc/assertions.nix"
     # FIXME: we should let the caller inject `pkgs` and `lim` ideally...
   ];
 })
