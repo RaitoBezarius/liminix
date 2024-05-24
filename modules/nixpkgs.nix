@@ -96,10 +96,6 @@ let
 in
 
 {
-  imports = [
-    (mkRemovedOptionModule [ "nixpkgs" "initialSystem" ] "The NixOS options `nesting.clone` and `nesting.children` have been deleted, and replaced with named specialisation. Therefore `nixpgks.initialSystem` has no effect anymore.")
-  ];
-
   options.nixpkgs = {
 
     pkgs = mkOption {
