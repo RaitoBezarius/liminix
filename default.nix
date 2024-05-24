@@ -18,24 +18,18 @@ let
     };
   });
 
-  eval = pkgs.lib.evalModules {
-    specialArgs = {
-      modulesPath = builtins.toString ./modules;
-    };
+  evalModules = (import ./lib/eval-config.nix {
+    inherit nixpkgs pkgs;
+    inherit (pkgs) lib;
+  });
+
+  eval = evalModules {
     modules = [
-      { _module.args = { inherit pkgs; inherit (pkgs) lim; }; }
-      ./modules/hardware.nix
-      ./modules/base.nix
-      ./modules/busybox.nix
-      ./modules/hostname.nix
-      ./modules/kernel
       device.module
       liminix-config
-      ./modules/s6
-      ./modules/users.nix
-      ./modules/outputs.nix
     ];
   };
+
   config = eval.config;
 
   borderVm = ((import <nixpkgs/nixos/lib/eval-config.nix>) {
@@ -54,6 +48,8 @@ let
     ];
   }).config.system;
 in {
+  inherit evalModules;
+
   outputs = config.system.outputs // {
     default = config.system.outputs.${config.hardware.defaultOutput};
     optionsJson =
