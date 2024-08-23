@@ -41,4 +41,6 @@ in rec {
   defaultProfile.packages = with pkgs; [
     figlet
   ];
+
+  nixpkgs.hostPlatform = lib.mkDefault "mipsel-linux";
 }
