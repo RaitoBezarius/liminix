@@ -9,7 +9,7 @@
 let
   overlay = import ./overlay.nix;
   pkgs = import nixpkgs (device.system // {
-    overlays = [overlay];
+    overlays = [ overlay ];
     config = {
       allowUnsupportedSystem = true; # mipsel
       permittedInsecurePackages = [
@@ -25,6 +25,11 @@ let
 
   eval = evalModules {
     modules = [
+      {
+        nixpkgs.overlays = [
+          overlay
+        ];
+      }
       device.module
       liminix-config
     ];
