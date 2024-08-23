@@ -92,7 +92,7 @@ in {
         description = "List of MTD device to attach";
         type = types.listOf types.str;
         example = [ "ubi_a" "ubi_b" "data" ];
-        default = null;
+        default = [ ];
       };
       networkInterfaces = mkOption {
         type = types.attrsOf types.anything;
