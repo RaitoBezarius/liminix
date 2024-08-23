@@ -4,19 +4,20 @@ let
     inherit (final) lib callPackage;
   };
   inherit (final) fetchpatch;
-  lua_no_readline = prev.lua5_3.overrideAttrs(o: {
-    name = "lua-tty";
-    preBuild = ''
-      makeFlagsArray+=(PLAT="posix" SYSLIBS="-Wl,-E -ldl"  CFLAGS="-O2 -fPIC -DLUA_USE_POSIX -DLUA_USE_DLOPEN")
-    '';
-    # lua in nixpkgs has a postInstall stanza that assumes only
-    # one output, we need to override that if we're going to
-    # convert to multi-output
-    # outputs = ["bin" "man" "out"];
-    makeFlags =
-      builtins.filter (x: (builtins.match "(PLAT|MYLIBS).*" x) == null)
-        o.makeFlags;
-  });
+  lua_no_readline = prev.lua5_3;
+#   lua_no_readline = prev.lua5_3.overrideAttrs(o: {
+#     name = "lua-tty";
+#     preBuild = ''
+#       makeFlagsArray+=(PLAT="posix" SYSLIBS="-Wl,-E -ldl"  CFLAGS="-O2 -fPIC -DLUA_USE_POSIX -DLUA_USE_DLOPEN")
+#     '';
+#     # lua in nixpkgs has a postInstall stanza that assumes only
+#     # one output, we need to override that if we're going to
+#     # convert to multi-output
+#     # outputs = ["bin" "man" "out"];
+#     makeFlags =
+#       builtins.filter (x: (builtins.match "(PLAT|MYLIBS).*" x) == null)
+#         o.makeFlags;
+#   });
 
   s6 = prev.s6.overrideAttrs(o:
     let
