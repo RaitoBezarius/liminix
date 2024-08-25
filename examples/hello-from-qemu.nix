@@ -42,5 +42,12 @@ in rec {
     figlet
   ];
 
-  nixpkgs.hostPlatform = lib.mkDefault "mipsel-linux";
+  nixpkgs.hostPlatform = lib.mkDefault {
+      config = "mips-unknown-linux-musl";
+      gcc = {
+        abi = "32";
+        arch = "mips32";          # maybe mips_24kc-
+      };
+    };
+  nixpkgs.buildPlatform = lib.mkDefault "x86_64-linux";
 }
