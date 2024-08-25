@@ -9,7 +9,7 @@
 , pkgsBuildBuild
 }: let
   run-liminix-vm = pkgsBuildBuild.writeFennel "run-liminix-vm" {
-    packages = [ qemuLim lua.pkgs.luaposix lua.pkgs.fennel ];
+    packages = [ qemuLim pkgsBuildBuild.lua.pkgs.luaposix pkgsBuildBuild.lua.pkgs.fennel ];
   } ./run-liminix-vm.fnl;
   connect = writeShellScript "connect-vm" ''
     export PATH="${lib.makeBinPath [socat]}:$PATH"
