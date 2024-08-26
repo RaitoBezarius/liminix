@@ -1,10 +1,9 @@
 {
   liminix
-, hostapd
 , writeText
 , lib
 }:
-{ interface, params} :
+{ package, interface, params } :
 let
   inherit (liminix.services) longrun;
   inherit (lib) concatStringsSep mapAttrsToList;
@@ -35,5 +34,5 @@ let
 in longrun {
   inherit name;
   dependencies = [ interface ];
-  run = "${hostapd}/bin/hostapd -i $(output ${interface} ifname)  -P /run/${name}.pid -S ${conf}";
+  run = "${package}/bin/hostapd -i $(output ${interface} ifname)  -P /run/${name}.pid -S ${conf}";
 }

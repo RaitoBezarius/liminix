@@ -26,6 +26,10 @@ in {
       interface = mkOption {
         type = liminix.lib.types.service;
       };
+      package = mkOption {
+        type = types.package;
+        default = pkgs.hostapd;
+      };
       params = mkOption {
         type = types.attrs;
       };

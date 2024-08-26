@@ -143,6 +143,42 @@ extraPkgs // {
       });
     in h.override { openssl = null; sqlite = null; };
 
+  hostapd-radius =
+  let
+    config =  [
+      "CONFIG_DRIVER_NL80211=y"
+      "CONFIG_DRIVER_WIRED=y"
+      "CONFIG_EAP=y"
+      "CONFIG_EAP_PEAP=y"
+      "CONFIG_RADIUS_SERVER=y"
+      "CONFIG_FULL_DYNAMIC_VLAN=y"
+      "CONFIG_IAPP=y"
+      "CONFIG_IEEE80211AC=y"
+      "CONFIG_IEEE80211AX=y"
+      "CONFIG_IEEE80211N=y"
+      "CONFIG_IEEE80211W=y"
+      "CONFIG_INTERNAL_LIBTOMMATH=y"
+      "CONFIG_INTERNAL_LIBTOMMATH_FAST=y"
+      "CONFIG_IPV6=y"
+      "CONFIG_LIBNL32=y"
+      "CONFIG_PKCS12=y"
+      "CONFIG_RSN_PREAUTH=y"
+      # Required to read the key material for RADIUS.
+      "CONFIG_TLS=openssl"
+    ];
+    h = prev.hostapd.overrideAttrs(o: {
+      extraConfig = "";
+      configurePhase = ''
+        cat > hostapd/defconfig <<EOF
+        ${builtins.concatStringsSep "\n" config}
+        EOF
+        ${o.configurePhase}
+      '';
+    });
+  in h.override { sqlite = null; };
+
+
+
   kexec-tools-static = prev.kexec-tools.overrideAttrs(o: {
     # For kexecboot we copy kexec into a ramdisk on the system being
     # upgraded from. This is more likely to work if kexec is
