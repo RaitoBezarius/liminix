@@ -170,7 +170,7 @@
           maxLEBcount = "256";
         };
 
-        flash.eraseBlockSize = 65536;
+        flash.eraseBlockSize = 64 * 1024;
 
         # This is a FIT containing a kernel padded and
         # a UBI volume rootfs.
