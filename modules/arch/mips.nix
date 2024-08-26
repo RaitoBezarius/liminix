@@ -14,5 +14,8 @@
     boot.commandLine = [
       "console=ttyS0,115200" # true of all mips we've yet encountered
     ];
+    boot.tftp.commandLine = [
+      "console=ttyS0,115200" # true of all mips we've yet encountered
+    ];
   };
 }

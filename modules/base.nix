@@ -111,6 +111,12 @@ in {
     ++ lib.optional (config.rootOptions != null) "rootflags=${config.rootOptions}"
     ++ lib.optional (config.hardware.alternativeRootDevice != null) "altroot=${config.hardware.alternativeRootDevice}";
 
+    boot.tftp.commandLine = [
+      "panic=10 oops=panic init=/bin/init loglevel=8"
+      "fw_devlink=off"
+      "rootfstype=${config.rootfsType}"
+    ];
+
     system.callService = path : parameters :
       let
         typeChecked = caller: type: value:

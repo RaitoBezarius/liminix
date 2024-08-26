@@ -29,6 +29,13 @@ in
       };
       boot.initramfs.enable = true;
 
+      # In TFTP, the device named "rootfs" is the UBI device.
+      # We tell the kernel to load it.
+      # This avoids interference from the other UBI volumes.
+      boot.tftp.commandLine = [
+        "ubi.mtd=rootfs"
+      ];
+
       system.outputs.rootfs =
       let
         inherit (pkgs.pkgsBuildBuild) runCommand;

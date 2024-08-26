@@ -28,6 +28,14 @@ in {
       type = types.bool;
       default = false;
     };
+    commandLine = mkOption {
+      type = types.listOf types.str;
+      default = config.boot.commandLine;
+      description = ''
+        TFTP-specific command line.
+        Defaults to the classical one if unset.
+      '';
+    };
   };
   options.system.outputs = {
     tftpboot = mkOption {
@@ -105,7 +113,7 @@ in {
             zimage = "bootz";
           }; in choices.${cfg.kernelFormat};
 
-          cmdline = concatStringsSep " " config.boot.commandLine;
+          cmdline = concatStringsSep " " config.boot.tftp.commandLine;
           objcopy = "${pkgs.stdenv.cc.bintools.targetPrefix}objcopy";
           stripAndZip = ''
             ${objcopy} -O binary -R .reginfo -R .notes -R .note -R .comment -R .mdebug -R .note.gnu.build-id -S vmlinux.elf vmlinux.bin
