@@ -65,13 +65,18 @@ static char * eat_param(char *p, char *param_name, char **out)
     return p;
 }
 
+#define SCAN_CMDLINE(cmdline, identifier, field) do { \
+    for (char* p = strdup(cmdline); *p; p++) { \
+	p = eat_param(p, identifier, &(opts->field)); \
+    } \
+} while(0)
+
+
 void parseopts(char * cmdline, struct root_opts *opts) {
-    for(char *p = cmdline; *p; p++) {
-	p = eat_param(p, "root=", &(opts->device));
-	p = eat_param(p, "rootfstype=", &(opts->fstype));
-	p = eat_param(p, "rootflags=", &(opts->mount_opts));
-	p = eat_param(p, "altroot=", &(opts->altdevice));
-    };
+    SCAN_CMDLINE(cmdline, "root=", device);
+    SCAN_CMDLINE(cmdline, "rootfstype=", fstype);
+    SCAN_CMDLINE(cmdline, "rootflags=", mount_opts);
+    SCAN_CMDLINE(cmdline, "rootalt=", altdevice);
 }
 
 #ifdef TESTS
@@ -85,6 +90,8 @@ void parseopts(char * cmdline, struct root_opts *opts) {
 #define S(x) #x
 #define expect_equal(actual, expected) \
     if(!actual || strcmp(actual, expected)) die("%d: expected \"%s\", got \"%s\"", __LINE__, expected, actual);
+#define expect_null(actual) \
+    if (actual) die("%d: expected null, got \"%s\"", __LINE__, actual);
 
 
 int main()
@@ -92,6 +99,7 @@ int main()
     struct root_opts opts = {
 	.device = "/dev/hda1",
 	.fstype = "xiafs",
+	.altdevice = NULL,
 	.mount_opts = NULL
     };
     char *buf;
@@ -103,13 +111,21 @@ int main()
     expect_equal(opts.fstype, "ubifs");
     expect_equal(opts.mount_opts, "subvol=1");
 
-    // finds altroot= options
-    buf = strdup("liminix console=ttyS0,115200 panic=10 oops=panic init=/bin/init loglevel=8 root=/dev/ubi0_4 rootfstype=ubifs rootflags=subvol=1 fw_devlink=off mtdparts=phram0:18M(rootfs) phram.phram=phram0,0x40400000,18874368,65536 root=/dev/mtdblock0 altroot=/dev/mtdblock6 foo");
+    // finds rootalt= options
+    buf = strdup("liminix console=ttyS0,115200 panic=10 oops=panic init=/bin/init loglevel=8 root=/dev/ubi0_4 rootfstype=ubifs rootflags=subvol=1 fw_devlink=off mtdparts=phram0:18M(rootfs) phram.phram=phram0,0x40400000,18874368,65536 root=/dev/mtdblock0 rootalt=/dev/mtdblock6 foo");
     memset(&opts, '\0', sizeof opts); parseopts(buf, &opts);
     expect_equal(opts.device, "/dev/mtdblock0");
     expect_equal(opts.altdevice, "/dev/mtdblock6");
     expect_equal(opts.fstype, "ubifs");
     expect_equal(opts.mount_opts, "subvol=1");
+
+    // Ensure that `altdevice` is NULL.
+    buf = strdup("liminix console=ttyS0,115200 panic=10 oops=panic init=/bin/init loglevel=8 fw_devlink=off rootfstype=ubifs mtdparts=phram0:19791872(rootfs) phram.phram=phram0,33554432,19791872,65536 rootfstype=jffs2 root=/dev/mtdblock0");
+    memset(&opts, '\0', sizeof opts); parseopts(buf, &opts);
+    expect_equal(opts.device, "/dev/mtdblock0");
+    expect_null(opts.altdevice);
+    expect_equal(opts.fstype, "jffs2");
+    expect_null(opts.mount_opts);
 
     // in case of duplicates, chooses the latter
     // also: works if the option is end of string
@@ -146,12 +162,12 @@ int main()
     if(opts.altdevice) die("expected null altdevice, got \"%s\"", opts.altdevice);
 
     // provides empty strings for empty options
-    buf = strdup("liminix rootfstype= fw_devlink=off root= altroot= /dev/hda1");
+    buf = strdup("liminix rootfstype= fw_devlink=off root= rootalt= /dev/hda1");
     memset(&opts, '\0', sizeof opts);  parseopts(buf, &opts);
 
     if(strlen(opts.fstype)) die("expected empty rootfstype, got \"%s\"", opts.fstype);
     if(strlen(opts.device)) die("expected empty root, got \"%s\"", opts.device);
-    if(strlen(opts.altdevice)) die("expected empty altroot, got \"%s\"", opts.altdevice);
+    if(strlen(opts.altdevice)) die("expected empty rootalt, got \"%s\"", opts.altdevice);
 
     expect_equal("01", pr_u32(1));
     expect_equal("ab", pr_u32(0xab));
