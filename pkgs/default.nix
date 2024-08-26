@@ -13,6 +13,7 @@ in {
   liminix = {
     builders =  {
       squashfs = callPackage ./liminix-tools/builders/squashfs.nix {};
+      jffs2 = callPackage ./liminix-tools/builders/jffs2.nix {};
       dtb = callPackage ./kernel/dtb.nix {};
       uimage = callPackage ./kernel/uimage.nix {};
       kernel = callPackage ./kernel {};

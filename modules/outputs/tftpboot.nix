@@ -5,10 +5,18 @@
 , ...
 }:
 let
-  inherit (lib) mkOption types concatStringsSep;
+  inherit (lib) mkOption mkIf types concatStringsSep;
+  inherit (pkgs) liminix;
   cfg = config.boot.tftp;
   hw = config.hardware;
   arch = pkgs.stdenv.hostPlatform.linuxArch;
+
+  # UBI cannot run on the top of phram.
+  needsSquashfs = config.rootfsType == "ubifs";
+  rootfstype = if needsSquashfs then "squashfs" else config.rootfsType;
+  rootfs = if needsSquashfs then
+    liminix.builders.squashfs config.filesystem.contents
+  else config.system.outputs.rootfs;
 in {
   imports = [ ../ramdisk.nix ];
   options.boot.tftp = {
@@ -74,6 +82,11 @@ in {
   config = {
     boot.ramdisk.enable = true;
 
+    kernel.config = mkIf needsSquashfs {
+      SQUASHFS = "y";
+      SQUASHFS_XZ = "y";
+    };
+
     system.outputs = rec {
       tftpboot-fit = 
       let
@@ -128,7 +141,7 @@ in {
             hex() { printf "0x%x" $1; }
 
             rootfsStart=${toString cfg.loadAddress}
-            rootfsSize=$(binsize64k ${o.rootfs} )
+            rootfsSize=$(binsize64k ${rootfs} )
             rootfsSize=$(($rootfsSize + ${toString cfg.freeSpaceBytes} ))
 
             ln -s ${o.manifest} manifest
@@ -142,13 +155,13 @@ in {
             dtbStart=$(($rootfsStart + $rootfsSize))
             ${if cfg.compressRoot
               then ''
-                lzma -z9cv ${o.rootfs} > rootfs.lz
+                lzma -z9cv ${rootfs} > rootfs.lz
                 rootfsLzStart=$dtbStart
                 rootfsLzSize=$(binsize rootfs.lz)
                 dtbStart=$(($dtbStart + $rootfsLzSize))
               ''
               else ''
-                ln -s ${o.rootfs} rootfs
+                ln -s ${rootfs} rootfs
               ''
              }
 
@@ -165,7 +178,7 @@ in {
             fdtput -p -t s dtb /reserved-memory/$node compatible phram
             fdtput -p -t lx dtb /reserved-memory/$node reg $ac_prefix $(hex $rootfsStart) $sz_prefix $(hex $rootfsSize)
 
-            cmd="liminix ${cmdline} mtdparts=phram0:''${rootfsSize}(rootfs) phram.phram=phram0,''${rootfsStart},''${rootfsSize},${toString config.hardware.flash.eraseBlockSize} root=/dev/mtdblock0";
+            cmd="liminix ${cmdline} mtdparts=phram0:''${rootfsSize}(rootfs) phram.phram=phram0,''${rootfsStart},''${rootfsSize},${toString config.hardware.flash.eraseBlockSize} rootfstype=${rootfstype} root=/dev/mtdblock0";
             fdtput -t s dtb /chosen ${config.boot.commandLineDtbNode} "$cmd"
 
             dtbSize=$(binsize ./dtb )

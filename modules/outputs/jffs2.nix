@@ -5,7 +5,8 @@
 , ...
 }:
 let
-  inherit (lib) mkIf mkOption types;
+  inherit (pkgs) liminix;
+  inherit (lib) mkIf;
   o = config.system.outputs;
 in
 {
@@ -24,17 +25,10 @@ in
     };
     boot.initramfs.enable = true;
     system.outputs = {
-      rootfs =
-        let
-          inherit (pkgs.pkgsBuildBuild) runCommand mtdutils;
-          endian = if pkgs.stdenv.isBigEndian
-                   then "--big-endian" else "--little-endian";
-        in runCommand "make-jffs2" {
-          depsBuildBuild = [ mtdutils ];
-        } ''
-          tree=${o.bootablerootdir}
-          (cd $tree && mkfs.jffs2 --compression-mode=size ${endian} -e ${toString config.hardware.flash.eraseBlockSize} --enable-compressor=lzo --pad --root . --output $out --squash --faketime )
-        '';
+      rootfs = liminix.builders.jffs2 {
+        bootableRootDirectory = o.bootablerootdir;
+        inherit (config.hardware.flash) eraseBlockSize;
+      };
     };
   };
 }
