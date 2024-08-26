@@ -181,8 +181,8 @@
         # Aligned on 2kb.
         alignment = 2048;
 
-        rootDevice = "ubi:rootfs";
-        alternativeRootDevice = "ubi:rootfs";
+        rootDevice = "ubi0:rootfs";
+        alternativeRootDevice = "ubi1:rootfs";
 
         # Auto-attach MTD devices: ubi_a then ubi_b.
         ubi.mtds = [ "ubi_a" "ubi_b" ];
