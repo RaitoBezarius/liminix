@@ -1,0 +1,14 @@
+/dts-v1/;
+
+/ {
+  description = "Liminix TFTP bootscript";
+  #address-cells = <1>;
+
+  images {
+      bootscript {
+        description = "Bootscript";
+        data = /incbin/("boot.scr");
+        type = "script";
+        compression = "none";
+      };           
+};

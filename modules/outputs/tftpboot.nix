@@ -51,11 +51,47 @@ in {
         It uses the Linux `phram <https://github.com/torvalds/linux/blob/master/drivers/mtd/devices/phram.c>`_ driver to emulate a flash device using a segment of physical RAM.
       '';
     };
+
+    tftpboot-fit = mkOption {
+      type = types.package;
+      description = ''
+        tftpboot-fit
+        ************
+
+        This output is a variant that encloses the `boot.scr` in a FIT
+        if that's simpler to transfer for you.
+      '';
+    };
   };
   config = {
     boot.ramdisk.enable = true;
 
     system.outputs = rec {
+      tftpboot-fit = 
+      let
+        tftpboot-fit = pkgs.writeText "tftpboot.its" ''
+        /dts-v1/;
+
+        / {
+          description = "Liminix TFTP bootscript";
+          #address-cells = <1>;
+
+          images {
+              bootscript {
+                description = "Bootscript";
+                data = /incbin/("${tftpboot}/boot.scr");
+                type = "script";
+                compression = "none";
+              };
+          };
+        };
+        '';
+      in
+        pkgs.runCommand "tftpboot-fit" { nativeBuildInputs = with pkgs.pkgsBuildBuild; [ ubootTools ]; } ''
+        mkdir -p $out/
+        cp -rf ${tftpboot}/* $out/
+        mkimage -f ${tftpboot-fit} $out/script.ub
+      '';
       tftpboot =
         let
           inherit (pkgs.lib.trivial) toHexString;
