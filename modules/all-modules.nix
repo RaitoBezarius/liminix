@@ -8,6 +8,7 @@
    ./bridge
    ./busybox.nix
    ./dhcp6c
+   ./jitter-rng
    ./dnsmasq
    ./firewall
    ./hardware.nix
