@@ -204,6 +204,11 @@ extraPkgs // {
     patches = (if o ? patches then o.patches else []) ++ [
       ./pkgs/mtdutils/0001-mkfs.jffs2-add-graft-option.patch
     ];
+
+    postInstall = ''
+      # Testing programs which we don't need. We save a lot of space!
+      rm -rf $out/libexec
+    '';
   });
 
   nftables = prev.nftables.overrideAttrs(o: {
