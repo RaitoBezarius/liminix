@@ -21,9 +21,13 @@ let
       service = oneshot {
         name = "${primary.name}.member.${member.name}";
         up = ''
+          echo "attaching $(output ${member} ifname) to $(output ${primary} ifname) bridge"
           ip link set dev $(output ${member} ifname) master $(output ${primary} ifname)
         '';
-        down = "ip link set dev $(output ${member} ifname) nomaster";
+        down = ''
+          echo "detaching $(output ${member} ifname) from any bridge"
+          ip link set dev $(output ${member} ifname) nomaster
+        '';
       };
     };
 in bundle {
