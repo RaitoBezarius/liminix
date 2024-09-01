@@ -19,10 +19,10 @@
         (match v
           ;; - up: Reflects the administrative state of the interface (IFF_UP)
           ;; - running: Reflects the operational state (IFF_RUNNING).
-          {:event "newlink" :name params.link :up :yes :running :yes}
+          {:event "newlink" :name params.link :up "yes" :running "yes"}
           {:present true :up true :running true}
 
-          {:event "newlink" :name params.link :up :yes}
+          {:event "newlink" :name params.link :up "yes"}
           {:present true :up true}
 
           {:event "newlink" :name params.link}
