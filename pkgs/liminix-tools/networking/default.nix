@@ -9,6 +9,7 @@
     ip link set up dev ${ifname}
     (in_outputs ${name}
      echo ${ifname} > ifname
+     cat /sys/class/net/${ifname}/address > ether
     )
   '';
 }

@@ -28,6 +28,12 @@ in
         type = types.str;
         description = "bridge interface name to create";
       };
+
+      macAddressFromInterface = mkOption {
+        type = types.nullOr liminix.lib.types.service;
+        default = null;
+        description = "reuse mac address from an existing interface service";
+      };
     };
     members = config.system.callService ./members.nix {
       primary = mkOption {
