@@ -23,7 +23,7 @@
           {:present true :up true :running true}
 
           {:event "newlink" :name params.link :up :yes}
-          {:present :true :up true}
+          {:present true :up true}
 
           {:event "newlink" :name params.link}
           {:present true }
