@@ -14,9 +14,13 @@ in oneshot rec {
       "ip link add name ${ifname} type bridge"
       else
       "ip link add name ${ifname} address $(output ${macAddressFromInterface} ether) type bridge"}
-    ${liminix.networking.ifup name ifname}
+
+      (in_outputs ${name}
+        echo ${ifname} > ifname
+        cat /sys/class/net/${ifname}/address > ether
+      )
   '';
-  down = "ip link set down dev ${ifname}";
+  down = "ip link delete ${ifname}";
 
   dependencies = optional (macAddressFromInterface != null) macAddressFromInterface;
 }

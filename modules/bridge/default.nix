@@ -20,6 +20,7 @@ in
     system.service.bridge = {
       primary = mkOption { type = liminix.lib.types.serviceDefn; };
       members = mkOption { type = liminix.lib.types.serviceDefn; };
+      ready = mkOption { type = liminix.lib.types.serviceDefn; };
     };
   };
   config.system.service.bridge = {
@@ -44,6 +45,19 @@ in
       members = mkOption {
         type = types.listOf liminix.lib.types.interface;
         description = "interfaces to add to the bridge";
+      };
+    };
+
+    # TODO: generalize it outside
+    ready = config.system.callService ./ready.nix {
+      primary = mkOption {
+        type = liminix.lib.types.service;
+        description = "primary bridge interface";
+      };
+
+      members = mkOption {
+        type = liminix.lib.types.service;
+        description = "members service";
       };
     };
   };
