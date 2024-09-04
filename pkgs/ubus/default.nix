@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, cmake, libubox, json_c }:
+{ stdenv, fetchFromGitHub, cmake, libubox, json_c, lua5_1 }:
 stdenv.mkDerivation {
   pname = "ubus";
   version = "unstable-04-09-2024";
@@ -15,12 +15,14 @@ stdenv.mkDerivation {
   ];
 
   buildInputs = [
+    lua5_1
     libubox
     json_c
   ];
 
   cmakeFlags = [
-    "-DBUILD_LUA=off"
+    "-DBUILD_LUA=on"
+    "-DLUAPATH=${placeholder "out"}/lib/lua"
     "-DBUILD_EXAMPLES=off"
   ];
 }
