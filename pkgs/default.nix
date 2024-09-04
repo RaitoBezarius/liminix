@@ -111,6 +111,7 @@ in {
   systemconfig = callPackage ./systemconfig {};
   tufted = callPackage ./tufted {};
   libubox = callPackage ./libubox {};
+  ubus = callPackage ./ubus {};
   uevent-watch = callPackage ./uevent-watch {};
   usb-modeswitch = callPackage ./usb-modeswitch {};
   writeAshScript = callPackage ./write-ash-script {};
