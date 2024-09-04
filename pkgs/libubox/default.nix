@@ -33,7 +33,8 @@ stdenv.mkDerivation rec {
   cmakeFlags = [
     "-DBUILD_EXAMPLES=off"
     # TODO: it explode at install phase.
-    "-DBUILD_LUA=off"
+    "-DBUILD_LUA=on"
+    "-DLUAPATH=${placeholder "out"}/lib/lua"
   ];
 
   meta = {
