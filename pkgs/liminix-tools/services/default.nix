@@ -39,6 +39,7 @@ let
     , contents ? []
     , buildInputs ? []
     , isTrigger ? false
+    , passthru ? {}
   } @ args:
     stdenvNoCC.mkDerivation {
       # we use stdenvNoCC to avoid generating derivations with names
@@ -50,6 +51,8 @@ let
       dependencies = builtins.map (d: d.name) dependencies;
       contents = builtins.map (d: d.name) contents;
       builder = ./builder.sh;
+
+      inherit passthru;
     };
 
   longrun = {
@@ -100,7 +103,18 @@ let
     serviceType = "bundle";
     inherit contents dependencies;
   });
+  structuredBundle = {
+    name
+    , contents ? {}
+    , dependencies ? []
+    , ...
+  } @ args: service (args // {
+    serviceType = "bundle";
+    contents = builtins.attrValues contents;
+    inherit dependencies;
+    passthru.components = contents;
+  });
   target = bundle;
 in {
-  inherit target bundle oneshot longrun output;
+  inherit target bundle oneshot longrun output structuredBundle;
 }

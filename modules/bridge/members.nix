@@ -7,7 +7,7 @@
 { members, primary } :
 
 let
-  inherit (liminix.services) bundle oneshot;
+  inherit (liminix.services) structuredBundle oneshot;
   inherit (lib) mapAttrs;
   addif = name: { dependencies ? [ ], member }: oneshot {
     name = "${primary.name}.member.${name}";
@@ -22,7 +22,7 @@ let
 
     dependencies = [ primary member ] ++ dependencies;
   };
-in bundle {
+in structuredBundle {
   name = "${primary.name}.members";
-  contents = builtins.attrValues (mapAttrs addif members);
+  contents = mapAttrs addif members;
 }
