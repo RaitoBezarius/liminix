@@ -7,11 +7,10 @@
 { members, primary } :
 
 let
-  inherit (liminix.networking) interface;
   inherit (liminix.services) bundle oneshot;
-  inherit (lib) mkOption types;
-  addif = member : oneshot {
-    name = "${primary.name}.member.${member.name}";
+  inherit (lib) mapAttrs;
+  addif = name: { dependencies ? [ ], member }: oneshot {
+    name = "${primary.name}.member.${name}";
     up = ''
       echo "attaching $(output ${member} ifname) to $(output ${primary} ifname) bridge"
       ip link set dev $(output ${member} ifname) master $(output ${primary} ifname)
@@ -21,9 +20,9 @@ let
       ip link set dev $(output ${member} ifname) nomaster
     '';
 
-    dependencies = [ primary member ];
+    dependencies = [ primary member ] ++ dependencies;
   };
 in bundle {
   name = "${primary.name}.members";
-  contents = map addif members;
+  contents = builtins.attrValues (mapAttrs addif members);
 }

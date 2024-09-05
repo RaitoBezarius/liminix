@@ -43,8 +43,20 @@ in
       };
 
       members = mkOption {
-        type = types.listOf liminix.lib.types.interface;
-        description = "interfaces to add to the bridge";
+        type = types.attrsOf (types.submodule ({ ... }: { options = {
+          member = mkOption {
+            type = liminix.lib.types.interface;
+            description = "interface to add";
+          };
+
+          dependencies = mkOption {
+            type = types.listOf liminix.lib.types.service;
+            default = [];
+            description = "extra dependencies before attaching this interface to the bridge";
+          };
+        }; }));
+
+        description = "set of bridge members";
       };
     };
 
