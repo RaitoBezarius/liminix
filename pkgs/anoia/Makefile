@@ -1,5 +1,5 @@
 
-default: fs.lua init.lua nl.lua svc.lua net/constants.lua
+default: wlan.lua fs.lua init.lua nl.lua svc.lua net/constants.lua
 
 test:
 	ln -s . anoia
