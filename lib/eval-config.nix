@@ -1,4 +1,4 @@
-{ nixpkgs ? <nixpkgs>, pkgs ? (import <nixpkgs> {}), lib ? pkgs.lib }:
+{ nixpkgs ? <nixpkgs>, pkgs ? (import nixpkgs {}), lib ? pkgs.lib }:
 args:
 let
   modulesPath = builtins.toString ../modules;
