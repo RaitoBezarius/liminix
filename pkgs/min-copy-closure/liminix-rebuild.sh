@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -Eeuo pipefail
 
 ssh_command=${SSH_COMMAND-ssh}
 
@@ -13,19 +14,24 @@ case "$1" in
 	reboot="soft"
 	shift
 	;;
+    "--root")
+	root_prefix="$2"
+	shift
+	shift
+	;;
 esac
 
 target_host=$1
 shift
 
 if [ -z "$target_host" ] ; then
-    echo Usage: liminix-rebuild \[--no-reboot\] target-host params
+    echo Usage: liminix-rebuild \[--no-reboot\] \[--fast\] target-host params
     exit 1
 fi
 
 if toplevel=$(nix-build "$@" -A outputs.systemConfiguration --no-out-link); then
     echo systemConfiguration $toplevel
-    min-copy-closure $target_host $toplevel
+    min-copy-closure --root "$root_prefix" $target_host $toplevel
     $ssh_command $target_host $toplevel/bin/install
     case "$reboot" in
 	reboot)
