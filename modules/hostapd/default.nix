@@ -20,6 +20,10 @@ in {
     system.service.hostapd = mkOption {
       type = liminix.lib.types.serviceDefn;
     };
+
+    system.service.hostapd-ready = mkOption {
+      type = liminix.lib.types.serviceDefn;
+    };
   };
   config = {
     system.service.hostapd = liminix.callService ./service.nix {
@@ -32,6 +36,13 @@ in {
       };
       params = mkOption {
         type = types.attrs;
+      };
+    };
+
+    system.service.hostapd-ready = liminix.callService ./ready.nix {
+      interface = mkOption {
+        type = liminix.lib.types.interface;
+        description = "Interface for which to wait that the oper state Master or Master (VLAN) has been reached.";
       };
     };
   };
