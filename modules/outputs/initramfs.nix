@@ -36,7 +36,7 @@ in
     kernel.config = {
       BLK_DEV_INITRD = "y";
       INITRAMFS_SOURCE = builtins.toJSON "${config.system.outputs.initramfs}";
-#      INITRAMFS_COMPRESSION_LZO = "y";
+      INITRAMFS_COMPRESSION_ZSTD = "y";
     };
 
     system.outputs = {

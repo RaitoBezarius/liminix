@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [buildPackages.stdenv.cc] ++
                       (with buildPackages.pkgs; [
                         rsync bc bison flex pkg-config
-                        openssl ncurses.all perl
+                        openssl ncurses.all perl zstd
                       ]);
   CC = "${stdenv.cc.bintools.targetPrefix}gcc";
   HOSTCC = with buildPackages.pkgs;
