@@ -12,10 +12,15 @@ let
   arch = pkgs.stdenv.hostPlatform.linuxArch;
 
   # UBI cannot run on the top of phram.
-  needsSquashfs = config.rootfsType == "ubifs";
-  rootfstype = if needsSquashfs then "squashfs" else config.rootfsType;
-  rootfs = if needsSquashfs then
-    liminix.builders.squashfs config.filesystem.contents
+  needsJffs2 = config.rootfsType == "ubifs";
+  # squashfs doesn't work out for us because only `bootablerootdir`
+  # contain what we need to boot, not `config.filesystem.contents` alas.
+  rootfstype = if needsJffs2 then "jffs2" else config.rootfsType;
+  rootfs = if needsJffs2 then
+  liminix.builders.jffs2 {
+    bootableRootDirectory = config.system.outputs.bootablerootdir;
+    inherit (config.hardware.flash) eraseBlockSize;
+  }
   else config.system.outputs.rootfs;
 in {
   imports = [ ../ramdisk.nix ];
@@ -82,9 +87,13 @@ in {
   config = {
     boot.ramdisk.enable = true;
 
-    kernel.config = mkIf needsSquashfs {
-      SQUASHFS = "y";
-      SQUASHFS_XZ = "y";
+    kernel.config = mkIf needsJffs2 {
+      JFFS2_FS = "y";
+      JFFS2_LZO = "y";
+      JFFS2_RTIME = "y";
+      JFFS2_COMPRESSION_OPTIONS = "y";
+      JFFS2_ZLIB = "y";
+      JFFS2_CMODE_SIZE = "y";
     };
 
     system.outputs = rec {
