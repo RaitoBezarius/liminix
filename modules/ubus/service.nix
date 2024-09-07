@@ -9,5 +9,8 @@ let
 in longrun {
   # Long term: make it unique so that user can spawn multiple buses if they want.
   name = "ubus";
-  run = "${package}/bin/ubusd";
+  run = ''
+    mkdir -p /run/ubus
+    ${package}/bin/ubusd -s /run/ubus/ubus.sock
+  '';
 }
