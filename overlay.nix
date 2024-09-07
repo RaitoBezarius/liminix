@@ -140,7 +140,7 @@ extraPkgs // {
            owner = "DGNum";
            repo = "hostapd";
            rev = "hostap-liminix-integration";
-           hash = "sha256-qoCXx3raXCD51YX5izj30VG/HMgr6lv/288Yg9I4S7M=";
+           hash = "sha256-5Xi90keCHxvuKR5Q7STuZDzuM9h9ac6aWoXVQYvqkQI=";
         };
         extraConfig = "";
         configurePhase = ''
@@ -182,7 +182,7 @@ extraPkgs // {
            owner = "DGNum";
            repo = "hostapd";
            rev = "hostap-liminix-integration";
-           hash = "sha256-qoCXx3raXCD51YX5izj30VG/HMgr6lv/288Yg9I4S7M=";
+           hash = "sha256-5Xi90keCHxvuKR5Q7STuZDzuM9h9ac6aWoXVQYvqkQI=";
       };
       extraConfig = "";
       configurePhase = ''
