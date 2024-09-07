@@ -10,6 +10,7 @@
 , linotify
 , anoia
 , netlink-lua
+, iwinfo
 , fennel
 }:
 let packages = [
@@ -18,6 +19,7 @@ let packages = [
       fennel
       lualinux
       netlink-lua
+      iwinfo
       lua.pkgs.readline
     ];
     join = ps: builtins.concatStringsSep ";" ps;
