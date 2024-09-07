@@ -2,14 +2,15 @@
   qemuLim
 , socat
 , writeShellScript
-, writeFennel
 , runCommand
+, fennel
 , lib
 , lua
 , pkgsBuildBuild
 }: let
-  run-liminix-vm = pkgsBuildBuild.writeFennel "run-liminix-vm" {
-    packages = [ qemuLim pkgsBuildBuild.lua.pkgs.luaposix pkgsBuildBuild.lua.pkgs.fennel ];
+  writeFennel = pkgsBuildBuild.writeFennel.override { inherit lua; };
+  run-liminix-vm = writeFennel "run-liminix-vm" {
+    packages = [ qemuLim lua.pkgs.luaposix fennel ];
   } ./run-liminix-vm.fnl;
   connect = writeShellScript "connect-vm" ''
     export PATH="${lib.makeBinPath [socat]}:$PATH"
