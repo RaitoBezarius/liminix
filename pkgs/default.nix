@@ -112,6 +112,7 @@ in {
   tufted = callPackage ./tufted {};
   libubox = callPackage ./libubox {};
   ubus = callPackage ./ubus {};
+  iwinfo = callPackage ./iwinfo {};
   uevent-watch = callPackage ./uevent-watch {};
   usb-modeswitch = callPackage ./usb-modeswitch {};
   writeAshScript = callPackage ./write-ash-script {};
