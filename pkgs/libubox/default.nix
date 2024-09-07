@@ -1,9 +1,9 @@
 {
   lib,
   stdenv,
-  fetchgit,
+  fetchFromGitea,
   cmake,
-  lua5_1,
+  lua,
   json_c
 }:
 
@@ -11,30 +11,32 @@ stdenv.mkDerivation rec {
   pname = "libubox";
   version = "unstable-2024-04-09";
 
-  src = fetchgit {
-    url = "https://git.openwrt.org/project/libubox.git";
-    rev = "eb9bcb64185ac155c02cc1a604692c4b00368324";
-    hash = "sha256-5KO2E+4pcDp/pe2+vjoQDmyMwCc0yKm847U4J6HjxyA=";
+  src = fetchFromGitea {
+    domain = "git.dgnum.eu";
+    owner = "DGNum";
+    repo = "libubox";
+    rev = "1c4b2dc4c12848e1b70b11e1cb2139ca8f19c860";
+    hash = "sha256-aPhGJ7viXQmnoQRY8DuRvtwtxSy+S4qPj1fBsK066Yc=";
   };
 
   nativeBuildInputs = [
     cmake
-    lua5_1
+    lua
   ];
 
   buildInputs = [
-    lua5_1
+    lua
     json_c
   ];
 
   # Otherwise, CMake cannot find jsoncpp?
-  env.NIX_CFLAGS_COMPILE = toString [ "-I${json_c.dev}/include/json-c" "-D JSONC" ];
+  env.NIX_CFLAGS_COMPILE = toString [ "-I${json_c.dev}/include/json-c" "-D JSONC" "-D LUA_COMPAT_MODULE" ];
 
   cmakeFlags = [
     "-DBUILD_EXAMPLES=off"
     # TODO: it explode at install phase.
     "-DBUILD_LUA=on"
-    "-DLUAPATH=${placeholder "out"}/lib/lua"
+    "-DLUAPATH=${placeholder "out"}/lib/lua/${lua.luaversion}/"
   ];
 
   meta = {
