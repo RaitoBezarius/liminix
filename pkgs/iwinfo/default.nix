@@ -4,12 +4,12 @@
   fetchFromGitea,
   ubus,
   libubox,
-  lua5_1,
+  lua5_3,
   libnl-tiny,
   backend ? "nl80211"
 }:
 let
-  lua = lua5_1;
+  lua = lua5_3;
 in
 stdenv.mkDerivation rec {
   pname = "iwinfo";
@@ -19,8 +19,8 @@ stdenv.mkDerivation rec {
     domain = "git.dgnum.eu";
     owner = "DGNum";
     repo = "iwinfo";
-    rev = "aaa40cc77a42683df3c32d1f693e9ab95f910f2a";
-    hash = "sha256-ojBj0dbDgtnloe1MILIjYVPX3PVZeUbYnEdqeg6/4OM=";
+    rev = "14685a26805155aa5c137993b9a4861a0bc585d5";
+    hash = "sha256-lg4sBoYcFFLhcUv+wKR6u1OCartjtnAoF9M5FdfO6JE=";
   };
 
   BACKENDS = backend;
