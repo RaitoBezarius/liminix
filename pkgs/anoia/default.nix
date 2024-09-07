@@ -4,6 +4,7 @@
 , linotify
 , lua
 , lualinux
+, iwinfo
 , cpio
 }:
 let pname =  "anoia";
@@ -12,7 +13,7 @@ in stdenv.mkDerivation {
   version = "0.1";
   src = ./.;
   nativeBuildInputs = [ fennel cpio ];
-  buildInputs = with lua.pkgs; [ linotify lualinux ];
+  buildInputs = with lua.pkgs; [ linotify lualinux iwinfo ];
   outputs = [ "out" "dev" ];
 
   doCheck = true;

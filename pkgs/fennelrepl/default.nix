@@ -20,7 +20,6 @@ let packages = [
       lualinux
       netlink-lua
       iwinfo
-      lua.pkgs.readline
     ];
     join = ps: builtins.concatStringsSep ";" ps;
     luapath = join (builtins.map (f:
