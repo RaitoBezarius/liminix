@@ -4,9 +4,13 @@
 #include <fcntl.h>
 #include <sys/mount.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <string.h>
 #include <stdint.h>
 #include <errno.h>
+#include <stdio.h>
+
+#include <dirent.h>
 
 #include <asm/setup.h>		/* for COMMAND_LINE_SIZE */
 
@@ -42,6 +46,25 @@ static int fork_exec(char * command, char *args[])
 	return wait(NULL);
     else
 	return execve(command, args, NULL);
+}
+
+static void debug_listdir(const char * path)
+{
+    DIR *mydir;
+    struct dirent *myfile;
+    struct stat mystat;
+
+    char buf[512];
+    mydir = opendir(path);
+    while((myfile = readdir(mydir)) != NULL)
+    {
+        sprintf(buf, "%s/%s", path, myfile->d_name);
+        stat(buf, &mystat);
+        printf("%llu", mystat.st_size);
+        printf(" %s\n", myfile->d_name);
+    }
+    closedir(mydir);
+
 }
 
 char banner[]  = "Running pre-init...\n";
@@ -108,7 +131,12 @@ int main(int argc, char *argv[], char *envp[])
 		   "bind", MS_BIND, NULL));
 
 	char *exec_args[] = { "activate",  "/target", NULL };
-	AVER(fork_exec("/target/persist/activate", exec_args));
+	if (fork_exec("/target/persist/activate", exec_args) < 0) {
+	    ERR("failed to activate the system\n");
+	    pr_u32(errno); ERR ( " - "); ERR(strerror(errno)); ERR("\n");
+	    goto failsafe;
+	}
+
 	AVER(chdir("/target"));
 
 	AVER(mount("/target", "/", "bind", MS_BIND | MS_REC, NULL));
@@ -120,13 +148,22 @@ int main(int argc, char *argv[], char *envp[])
 	AVER(execve("/persist/init", argv, envp));
     }
 
+failsafe:
+    debug_listdir("/");
+    debug_listdir("/target");
+
     ERR("failed to mount the rootfs\n");
     ERR("final stand using the failsafe initialization method\n");
     ERR("the boot process is manual from now on\n");
 
     argv[0] = "init";
     argv[1] = NULL;
+    // Attempt to unmount the /target mount-bind.
+    AVER(umount("/target"));
     AVER(execve("/failsafe-init", argv, envp));
+
+    debug_listdir("/");
+    debug_listdir("/target");
 
     die();
 }
