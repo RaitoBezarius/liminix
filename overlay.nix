@@ -172,8 +172,7 @@ extraPkgs // {
       "CONFIG_LIBNL32=y"
       "CONFIG_PKCS12=y"
       "CONFIG_RSN_PREAUTH=y"
-      # Required to read the key material for RADIUS.
-      "CONFIG_TLS=openssl"
+      "CONFIG_TLS=internal"
     ];
     h = prev.hostapd.overrideAttrs(o: {
       extraConfig = "";
@@ -184,7 +183,7 @@ extraPkgs // {
         ${o.configurePhase}
       '';
     });
-  in h.override { sqlite = null; };
+  in h.override { openssl = null; sqlite = null; };
 
 
 
