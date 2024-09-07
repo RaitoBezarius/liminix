@@ -15,7 +15,7 @@ in {
   };
   config = {
     services.hostname = oneshot {
-      name = "hostname";
+      name = "hostname-${builtins.substring 0 12 (builtins.hashString "sha256" config.hostname)}";
       up = "echo ${config.hostname} > /proc/sys/kernel/hostname";
       down = "true";
     };
