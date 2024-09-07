@@ -98,6 +98,7 @@ int main(int argc, char *argv[], char *envp[])
 	    AVER(mount(opts.device, "/target/persist", opts.fstype, 0, opts.mount_opts));
 	} else {
 	    if(mount(opts.device, "/target/persist", opts.fstype, 0, opts.mount_opts) < 0) {
+		ERR("failed to mount primary device, mount the alternative device\n");
 		AVER(mount(opts.altdevice, "/target/persist", opts.fstype, 0, opts.mount_opts));
 	    }
 	}
@@ -118,5 +119,14 @@ int main(int argc, char *argv[], char *envp[])
 
 	AVER(execve("/persist/init", argv, envp));
     }
+
+    ERR("failed to mount the rootfs\n");
+    ERR("final stand using the failsafe initialization method\n");
+    ERR("the boot process is manual from now on\n");
+
+    argv[0] = "init";
+    argv[1] = NULL;
+    AVER(execve("/failsafe-init", argv, envp));
+
     die();
 }
