@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, libubox, json_c, lua5_1 }:
+{ stdenv, fetchFromGitHub, cmake, libubox, json_c, lua5_1, defaultSocketLocation ? "/run/ubus/ubus.sock" }:
 stdenv.mkDerivation {
   pname = "ubus";
   version = "unstable-04-09-2024";
@@ -9,6 +9,12 @@ stdenv.mkDerivation {
     rev = "65bb027054def3b94a977229fd6ad62ddd32345b";
     hash = "sha256-n82Ub0IiuvWbnlDCoN+0hjo/1PbplEbc56kuOYMrHxQ=";
   };
+
+  # We don't use /var/run/ in Liminix by default.
+  postPatch = ''
+    substituteInPlace CMakeLists.txt \
+      --replace-fail "/var/run/ubus/ubus.sock" "${defaultSocketLocation}"
+  '';
 
   nativeBuildInputs = [
     cmake

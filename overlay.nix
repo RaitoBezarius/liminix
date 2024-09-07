@@ -130,9 +130,18 @@ extraPkgs // {
         "CONFIG_LIBNL32=y"
         "CONFIG_PKCS12=y"
         "CONFIG_RSN_PREAUTH=y"
+        "CONFIG_UBUS=y"
         "CONFIG_TLS=internal"
       ];
       h = prev.hostapd.overrideAttrs(o: {
+        buildInputs = o.buildInputs ++ [ final.libubox final.ubus ];
+        src = final.fetchFromGitea {
+           domain = "git.dgnum.eu";
+           owner = "DGNum";
+           repo = "hostapd";
+           rev = "hostap-liminix-integration";
+           hash = "sha256-qoCXx3raXCD51YX5izj30VG/HMgr6lv/288Yg9I4S7M=";
+        };
         extraConfig = "";
         configurePhase = ''
           cat > hostapd/defconfig <<EOF
@@ -163,10 +172,18 @@ extraPkgs // {
       "CONFIG_LIBNL32=y"
       "CONFIG_PKCS12=y"
       "CONFIG_RSN_PREAUTH=y"
-      # Required to read the key material for RADIUS.
-      "CONFIG_TLS=openssl"
+      "CONFIG_UBUS=y"
+      "CONFIG_TLS=internal"
     ];
     h = prev.hostapd.overrideAttrs(o: {
+      buildInputs = o.buildInputs ++ [ final.libubox final.ubus ];
+        src = final.fetchFromGitea {
+           domain = "git.dgnum.eu";
+           owner = "DGNum";
+           repo = "hostapd";
+           rev = "hostap-liminix-integration";
+           hash = "sha256-qoCXx3raXCD51YX5izj30VG/HMgr6lv/288Yg9I4S7M=";
+      };
       extraConfig = "";
       configurePhase = ''
         cat > hostapd/defconfig <<EOF
@@ -175,7 +192,7 @@ extraPkgs // {
         ${o.configurePhase}
       '';
     });
-  in h.override { sqlite = null; };
+  in h.override { openssl = null; sqlite = null; };
 
 
 
