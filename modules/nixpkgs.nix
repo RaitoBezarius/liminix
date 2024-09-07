@@ -83,11 +83,11 @@ let
               localSystem = cfg.hostPlatform;
             };
       in
-      import <nixpkgs> ({
+      import cfg.source ({
         inherit (cfg) config overlays;
       } // systemArgs)
     else
-      import <nixpkgs> {
+      import cfg.source {
         inherit (cfg) config overlays localSystem crossSystem;
       };
 
@@ -97,6 +97,14 @@ in
 
 {
   options.nixpkgs = {
+    source = mkOption {
+      type = types.package // {
+        description = "Source of a nixpkgs repository";
+      };
+
+      default = <nixpkgs>;
+      defaultText = "<nixpkgs>";
+    };
 
     pkgs = mkOption {
       defaultText = literalExpression ''
