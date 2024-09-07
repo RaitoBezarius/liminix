@@ -222,8 +222,8 @@
 
         imageFormat = "fit";
         tftp = {
-          # 5MB is nice.
-          freeSpaceBytes = 5 * 1024 * 1024;
+          # 20MB is pretty good on this device as we have plenty of RAM.
+          freeSpaceBytes = 20 * 1024 * 1024;
           appendDTB = true;
           loadAddress = lim.parseInt "0x2000000";
         };
