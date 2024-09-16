@@ -69,6 +69,14 @@ in {
         default = "uimage";
       };
       tftp = {
+        commandLine = mkOption {
+          type = types.listOf types.str;
+          default = config.boot.commandLine;
+          description = ''
+            TFTP-specific command line.
+            Defaults to the classical one if unset.
+          '';
+        };
         loadAddress = mkOption {
           type = types.ints.unsigned;
           description = ''
@@ -98,6 +106,9 @@ in {
     };
   };
   config = {
+    # By default, we enable cross-compilation support.
+    nixpkgs.buildPlatform = lib.mkDefault builtins.currentSystem;
+
     defaultProfile.packages = with pkgs;
       [ s6 s6-init-bin execline s6-linux-init s6-rc ];
 

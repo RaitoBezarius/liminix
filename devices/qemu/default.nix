@@ -1,7 +1,7 @@
 # This "device" generates images that can be used with the QEMU
 # emulator. The default output is a directory containing separate
 # kernel (uncompressed vmlinux) and initrd (squashfs) images
-{
+rec {
   system = {
     crossSystem = {
       config = "mips-unknown-linux-musl";
@@ -41,6 +41,9 @@
       ../../modules/arch/mipseb.nix
       ../families/qemu.nix
     ];
+
+    nixpkgs.hostPlatform = system.crossSystem;
+
     kernel = {
       config = {
         MIPS_MALTA= "y";

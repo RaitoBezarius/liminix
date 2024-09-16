@@ -41,14 +41,6 @@ in {
       type = types.bool;
       default = false;
     };
-    commandLine = mkOption {
-      type = types.listOf types.str;
-      default = config.boot.commandLine;
-      description = ''
-        TFTP-specific command line.
-        Defaults to the classical one if unset.
-      '';
-    };
   };
   options.system.outputs = {
     tftpboot = mkOption {

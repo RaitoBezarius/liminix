@@ -1,4 +1,4 @@
-{
+rec {
   system = {
     crossSystem = {
       config = "mipsel-unknown-linux-musl";
@@ -134,6 +134,8 @@
         ../../modules/outputs/zyxel-nwa-fit.nix
         ../../modules/zyxel-dual-image
       ];
+
+      nixpkgs.hostPlatform = system.crossSystem;
 
       filesystem = dir {
         lib = dir {

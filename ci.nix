@@ -1,21 +1,15 @@
 {
-  nixpkgs
-, unstable
-, liminix
+  sources ? import ./lon.nix
+, nixpkgs ? sources.nixpkgs
+, unstable ? nixpkgs
+, liminix ? ./.
 , ... }:
 let
-  inherit (builtins) map;
-  pkgs = (import nixpkgs {});
+  pkgs = (import nixpkgs { });
   borderVmConf =  ./bordervm.conf-example.nix;
   inherit (pkgs.lib.attrsets) genAttrs;
   devices = [
-    "gl-ar750"
-    "gl-mt300a"
-    "gl-mt300n-v2"
     "qemu"
-    "qemu-aarch64"
-    "qemu-armv7l"
-    "tp-archer-ax23"
     "zyxel-nwa50ax"
   ];
   vanilla = ./vanilla-configuration.nix;
@@ -44,12 +38,6 @@ let
                   imports = [ ./modules/all-modules.nix ];
                 };
               }).outputs.optionsJson;
-            installers = map (f: "system.outputs.${f}") [
-              "vmroot"
-              "mtdimage"
-              "ubimage"
-            ];
-            inherit (pkgs.lib) concatStringsSep;
         in pkgs.stdenv.mkDerivation {
           name = "liminix-doc";
           nativeBuildInputs = with pkgs; [
