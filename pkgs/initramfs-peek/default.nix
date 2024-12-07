@@ -3,7 +3,7 @@
 , pkgsBuildBuild
 , runCommand
 , cpio
-, writeReferencesToFile
+, writeClosure
 , writeScript
 } :
 let
@@ -18,7 +18,7 @@ let
     mount -t sysfs none /sys
     ${busybox}/bin/sh
   '';
-  refs = writeReferencesToFile busybox;
+  refs = writeClosure [ busybox ];
 in runCommand "initramfs.cpio" { } ''
   cat << SPECIALS | ${gen_init_cpio}/bin/gen_init_cpio /dev/stdin > out
   dir /proc 0755 0 0

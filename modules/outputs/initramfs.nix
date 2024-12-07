@@ -54,7 +54,7 @@ in
             mount -t sysfs none /sys
             ${busybox}/bin/sh
           '';
-          refs = pkgs.writeReferencesToFile busybox;
+          refs = pkgs.writeClosure [ busybox ];
         in runCommand "initramfs.cpio" {} ''
           cat << SPECIALS | ${gen_init_cpio}/bin/gen_init_cpio /dev/stdin > out
           dir /proc 0755 0 0
